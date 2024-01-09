@@ -1,0 +1,53 @@
+body {
+    margin: 0;
+    background-color: rgb(208, 255, 239);
+}
+
+.main-game {
+    height: 100vh;
+    width: 100vw;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.genius {
+    display: grid;
+    grid-template-areas: 
+    'c-green c-red'
+    'c-yellow c-blue';
+    grid-gap: 10px;
+    border: 1px solid  #FFF;
+    background-color: #FFF;
+    border-radius: 100%;
+    width: 500px;
+    height: 500px;
+}
+
+.green {
+    grid-area: c-green;
+    background-color: green;
+    border-top-left-radius: 100%;
+}
+
+.red {
+    grid-area: c-red;
+    background-color: red;
+    border-top-right-radius: 100%;
+}
+
+.yellow {
+    grid-area: c-yellow;
+    background-color: yellow;
+    border-bottom-left-radius: 100%;
+}
+
+.blue {
+    grid-area: c-blue;
+    background-color: blue;
+    border-bottom-right-radius: 100%;
+}
+
+.selected {
+    opacity: 0.2;
+}
