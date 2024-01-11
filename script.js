@@ -1,107 +1,88 @@
-let order = [];
-let clickedOrder = [];
-let score = 0;
+(() => {
+    const btnStart = document.querySelector("button");
+    const btn3D = document.querySelector(".btn-3D");
+    const genius = document.querySelector(".genius");
+    const areas = Array.from(document.querySelectorAll(".blue, .red, .yellow, .green"));
+    const info = document.querySelector(".info");
+    const myScore = document.querySelector(".score");
+    const randomAreas = new Set();
+    let numberRandom = null;
+    let score = 0;
 
-//0 - verde
-//1 - vermelho
-//2 - amarelo
-//3 - azul
-
-const blue = document.querySelector('.blue');
-const red = document.querySelector('.red');
-const green = document.querySelector('.green');
-const yellow = document.querySelector('.yellow');
-
-//cria ordem aletoria de cores
-let shuffleOrder = () => {
-    let colorOrder = Math.floor(Math.random() * 4);
-    order[order.length] = colorOrder;
-    clickedOrder = [];
-
-    for(let i in order) {
-        let elementColor = createColorElement(order[i]);
-        lightColor(elementColor, Number(i) + 1);
+    function showMessage(message, inf = "") {
+        myScore.textContent = message;
+        info.textContent = inf;
+        score = 0;
     }
-}
 
-//acende a proxima cor
-let lightColor = (element, number) => {
-    number = number * 500;
-    setTimeout(() => {
-        element.classList.add('selected');
-    }, number - 250);
-    setTimeout(() => {
-        element.classList.remove('selected');
-    });
-}
+    function gameOver() {
+        randomAreas.clear();
+        btnStart.disabled = false;
+        btnStart.textContent = "Iniciar";
 
-//checa se os botoes clicados são os mesmos da ordem gerada no jogo
-let checkOrder = () => {
-    for(let i in clickedOrder) {
-        if(clickedOrder[i] != order[i]) {
+        showMessage("Você perdeu!", `Você fez ${score} pontos`);
+        areas.forEach(area => area.classList.remove("area"));
+        areas.forEach(area => area.removeEventListener("click", checkClickedArea));
+    }
+
+    function checkClickedArea(event) {
+        if(areas[numberRandom] === event.target) {
+            myScore.textContent = `Pontuação: ${++score}`;
+
+            randomAreas.delete(areas[numberRandom]);
+            shuffleOrder();
+
+        } else {
+            console.log(randomAreas)
             gameOver();
-            break;
         }
     }
-    if(clickedOrder.length == order.length) {
-        alert(`Pontuação: ${score}\nVocê acertou! Iniciando próximo nível!`);
-        nextLevel();
+
+    function shuffleOrder() {
+        numberRandom = Math.floor(Math.random() * 4);
+        randomAreas.add(areas[numberRandom]);
+
+        console.log(randomAreas)
+        lightArea(numberRandom);
     }
-}
 
-//funcao para o clique do usuario
-let click = (color) => {
-    clickedOrder[clickedOrder.length] = color;
-    createColorElement(color).classList.add('selected');
+    function lightArea(index) {
+        // atribui o número 1 se o valor do index for 0
+        let number = index | 1;
+        const time = 200 + (number * 100);
+        const colorShadow = areas[index].className.replace(" area", "");
 
-    setTimeout(() => {
-        createColorElement(color).classList.remove('selected');
-        checkOrder();
-    },250);
-}
 
-//funcao que retorna a cor
-let createColorElement = (color) => {
-    if(color == 0) {
-        return green;
-    } else if(color == 1) {
-        return red;
-    } else if (color == 2) {
-        return yellow;
-    } else if (color == 3) {
-        return blue;
+        areas[index].classList.add("selected");
+
+        if(genius.classList.contains("view3D")) {
+            genius.style.boxShadow = `0px 4px 4px ${colorShadow}, 0px 13px 8px #101010`;
+        }
+        
+        setTimeout(() => {
+            areas[index].classList.remove("selected");
+            genius.style.boxShadow = "initial";
+        }, time)
+
+        console.log(time)
     }
-}
-
-//funcao para proximo nivel do jogo
-let nextLevel = () => {
-    score++;
-    shuffleOrder();
-}
-
-//funcao para game over
-let gameOver = () => {
-    alert(`Pontuação: ${score}!\nVocê perdeu o jogo!\nClique em OK para iniciar um novo jogo`);
-    order = [];
-    clickedOrder = [];
-
-    playGame();
-}
-
-//funcao de inicio do jogo
-let playGame = () => {
-    alert('Bem vindo ao Gênesis! Iniciando novo jogo!');
-    score = 0;
-
-    nextLevel();
-}
-
-//eventos de clique para as cores
-green.onclick = () => click(0);
-red.onclick = () => click(1);
-yellow.onclick = () => click(2);
-blue.onclick = () => click(3);
 
 
-//inicio do jogo
-playGame();
+    function start() {
+        randomAreas.clear()
+        shuffleOrder();
+        showMessage("Pontuação:");
+        btnStart.disabled = true;
+        btnStart.textContent = "Desabilitado";
+
+        areas.forEach(area => area.classList.add("area"));
+        areas.forEach(area => area.addEventListener("click", checkClickedArea));
+    }
+    
+    function apply3DTransform() {
+        genius.classList.toggle("view3D");
+    }
+    
+    btnStart.addEventListener("click", start);
+    btn3D.addEventListener("click", apply3DTransform);
+})()
